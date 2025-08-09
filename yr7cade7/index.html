@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YR7cade - Multiplayer Games</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+</head>
+<body class="bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 min-h-screen text-white">
+    <!-- Main Menu -->
+    <div id="mainMenu" class="container mx-auto px-4 py-8">
+        <div class="text-center mb-12">
+            <h1 class="text-6xl font-bold mb-4 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">
+                🎮 YR7cade
+            </h1>
+            <p class="text-xl text-gray-300">Epic Multiplayer Games for Year 7!</p>
+        </div>
+
+        <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Multiplayer Section -->
+            <div class="bg-black/30 backdrop-blur-sm rounded-2xl p-8 border border-purple-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-yellow-400">🌐 Multiplayer</h2>
+                
+                <div class="space-y-4">
+                    <button onclick="showCreateRoom()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg">
+                        🏠 Create Room
+                    </button>
+                    
+                    <button onclick="showJoinRoom()" class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg">
+                        🚪 Join Room
+                    </button>
+                </div>
+            </div>
+
+            <!-- Single Player Section -->
+            <div class="bg-black/30 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30">
+                <h2 class="text-3xl font-bold mb-6 text-center text-cyan-400">🎯 Single Player</h2>
+                
+                <div class="space-y-4">
+                    <button onclick="startSnake()" class="w-full bg-gradient-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg">
+                        🐍 Snake Game
+                    </button>
+                    
+                    <button onclick="startPong()" class="w-full bg-gradient-to-r from-orange-500 to-yellow-600 hover:from-orange-600 hover:to-yellow-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg">
+                        🏓 Pong
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Room Screen -->
+    <div id="createRoomScreen" class="hidden container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-green-500/30">
+            <h2 class="text-3xl font-bold mb-6 text-center text-green-400">🏠 Create Room</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Your Name:</label>
+                    <input type="text" id="hostName" placeholder="Enter your name" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-green-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Choose Game:</label>
+                    <select id="gameSelect" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white focus:border-green-500 focus:outline-none">
+                        <option value="snake">🐍 Snake Battle</option>
+                        <option value="pong">🏓 Pong Duel</option>
+                        <option value="quiz">🧠 Quiz Challenge</option>
+                    </select>
+                </div>
+                
+                <button onclick="createRoom()" class="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300">
+                    Create Room
+                </button>
+                
+                <button onclick="showMainMenu()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Join Room Screen -->
+    <div id="joinRoomScreen" class="hidden container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-blue-500/30">
+            <h2 class="text-3xl font-bold mb-6 text-center text-blue-400">🚪 Join Room</h2>
+            
+            <div class="space-y-6">
+                <div>
+                    <label class="block text-sm font-medium mb-2">Your Name:</label>
+                    <input type="text" id="playerName" placeholder="Enter your name" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium mb-2">Room Code:</label>
+                    <input type="text" id="roomCode" placeholder="Enter 6-digit code" maxlength="6" class="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:border-blue-500 focus:outline-none text-center text-2xl tracking-widest">
+                </div>
+                
+                <button onclick="joinRoom()" class="w-full bg-gradient-to-r from-blue-500 to-cyan-600 hover:from-blue-600 hover:to-cyan-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300">
+                    Join Room
+                </button>
+                
+                <button onclick="showMainMenu()" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300">
+                    Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Room Lobby -->
+    <div id="roomLobby" class="hidden container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto bg-black/40 backdrop-blur-sm rounded-2xl p-8 border border-yellow-500/30">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold mb-2 text-yellow-400">🎮 Room Lobby</h2>
+                <div class="text-6xl font-mono tracking-wider text-white bg-gray-800 rounded-lg py-4 px-6 inline-block">
+                    <span id="displayRoomCode">------</span>
+                </div>
+                <p class="text-gray-300 mt-2">Share this code with friends!</p>
+            </div>
+            
+            <div class="mb-8">
+                <h3 class="text-xl font-bold mb-4 text-center">👥 Players in Room:</h3>
+                <div id="playersList" class="space-y-2">
+                    <!-- Players will be added here -->
+                </div>
+            </div>
+            
+            <div class="text-center space-y-4">
+                <button id="startGameBtn" onclick="startMultiplayerGame()" class="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 text-lg hidden">
+                    🚀 Start Game
+                </button>
+                
+                <button onclick="leaveRoom()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300">
+                    Leave Room
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="hidden">
+        <canvas id="gameCanvas" class="border-4 border-white mx-auto block mt-8"></canvas>
+        <div class="text-center mt-4">
+            <button onclick="endGame()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg">
+                End Game
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // 🔥 PASTE YOUR FIREBASE CONFIG HERE 🔥
+        // Replace this entire section with the code you copied from Firebase:
+        const firebaseConfig = {
+  apiKey: "AIzaSyCFjKFfk-m5bt0ucyqUHd4N5otActpFW1c",
+  authDomain: "yr7cade.firebaseapp.com",
+  databaseURL: "https://yr7cade-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "yr7cade",
+  storageBucket: "yr7cade.firebasestorage.app",
+  messagingSenderId: "480811614984",
+  appId: "1:480811614984:web:7cf844f665fb8c1656e2bd",
+  measurementId: "G-NJ4KZX6V7K"
+
+           
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
+        // Global variables
+        let currentRoom = null;
+        let currentPlayer = null;
+        let isHost = false;
+
+        // Screen navigation
+        function showMainMenu() {
+            document.getElementById('mainMenu').classList.remove('hidden');
+            document.getElementById('createRoomScreen').classList.add('hidden');
+            document.getElementById('joinRoomScreen').classList.add('hidden');
+            document.getElementById('roomLobby').classList.add('hidden');
+            document.getElementById('gameScreen').classList.add('hidden');
+        }
+
+        function showCreateRoom() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('createRoomScreen').classList.remove('hidden');
+        }
+
+        function showJoinRoom() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('joinRoomScreen').classList.remove('hidden');
+        }
+
+        // Generate random room code
+        function generateRoomCode() {
+            return Math.random().toString(36).substr(2, 6).toUpperCase();
+        }
+
+        // Create room
+        async function createRoom() {
+            const hostName = document.getElementById('hostName').value.trim();
+            const selectedGame = document.getElementById('gameSelect').value;
+            
+            if (!hostName) {
+                alert('Please enter your name!');
+                return;
+            }
+
+            const roomCode = generateRoomCode();
+            currentRoom = roomCode;
+            currentPlayer = hostName;
+            isHost = true;
+
+            try {
+                await database.ref(`rooms/${roomCode}`).set({
+                    host: hostName,
+                    game: selectedGame,
+                    players: {
+                        [hostName]: {
+                            name: hostName,
+                            isHost: true,
+                            joinedAt: Date.now()
+                        }
+                    },
+                    status: 'waiting',
+                    createdAt: Date.now()
+                });
+
+                showRoomLobby();
+                listenForPlayers();
+            } catch (error) {
+                alert('Error creating room: ' + error.message);
+            }
+        }
+
+        // Join room
+        async function joinRoom() {
+            const playerName = document.getElementById('playerName').value.trim();
+            const roomCode = document.getElementById('roomCode').value.trim().toUpperCase();
+            
+            if (!playerName || !roomCode) {
+                alert('Please enter your name and room code!');
+                return;
+            }
+
+            if (roomCode.length !== 6) {
+                alert('Room code must be 6 characters!');
+                return;
+            }
+
+            try {
+                const roomSnapshot = await database.ref(`rooms/${roomCode}`).once('value');
+                
+                if (!roomSnapshot.exists()) {
+                    alert('Room not found! Check the code and try again.');
+                    return;
+                }
+
+                const roomData = roomSnapshot.val();
+                if (roomData.status !== 'waiting') {
+                    alert('This room is not accepting new players.');
+                    return;
+                }
+
+                currentRoom = roomCode;
+                currentPlayer = playerName;
+                isHost = false;
+
+                await database.ref(`rooms/${roomCode}/players/${playerName}`).set({
+                    name: playerName,
+                    isHost: false,
+                    joinedAt: Date.now()
+                });
+
+                showRoomLobby();
+                listenForPlayers();
+            } catch (error) {
+                alert('Error joining room: ' + error.message);
+            }
+        }
+
+        // Show room lobby
+        function showRoomLobby() {
+            document.getElementById('createRoomScreen').classList.add('hidden');
+            document.getElementById('joinRoomScreen').classList.add('hidden');
+            document.getElementById('roomLobby').classList.remove('hidden');
+            document.getElementById('displayRoomCode').textContent = currentRoom;
+            
+            if (isHost) {
+                document.getElementById('startGameBtn').classList.remove('hidden');
+            }
+        }
+
+        // Listen for player changes
+        function listenForPlayers() {
+            database.ref(`rooms/${currentRoom}/players`).on('value', (snapshot) => {
+                const players = snapshot.val() || {};
+                updatePlayersList(players);
+            });
+        }
+
+        // Update players list
+        function updatePlayersList(players) {
+            const playersList = document.getElementById('playersList');
+            playersList.innerHTML = '';
+            
+            Object.values(players).forEach(player => {
+                const playerDiv = document.createElement('div');
+                playerDiv.className = 'bg-gray-800 rounded-lg p-3 flex items-center justify-between';
+                playerDiv.innerHTML = `
+                    <span class="text-white">${player.name}</span>
+                    <span class="text-sm ${player.isHost ? 'text-yellow-400' : 'text-gray-400'}">
+                        ${player.isHost ? '👑 Host' : '👤 Player'}
+                    </span>
+                `;
+                playersList.appendChild(playerDiv);
+            });
+        }
+
+        // Leave room
+        async function leaveRoom() {
+            if (currentRoom && currentPlayer) {
+                try {
+                    await database.ref(`rooms/${currentRoom}/players/${currentPlayer}`).remove();
+                    
+                    if (isHost) {
+                        await database.ref(`rooms/${currentRoom}`).remove();
+                    }
+                } catch (error) {
+                    console.error('Error leaving room:', error);
+                }
+            }
+            
+            currentRoom = null;
+            currentPlayer = null;
+            isHost = false;
+            showMainMenu();
+        }
+
+        // Start multiplayer game
+        function startMultiplayerGame() {
+            alert('🎮 Multiplayer games coming soon! For now, try the single player games.');
+        }
+
+        // Single player games
+        function startSnake() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            initSnakeGame();
+        }
+
+        function startPong() {
+            document.getElementById('mainMenu').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+            initPongGame();
+        }
+
+        function endGame() {
+            showMainMenu();
+        }
+
+        // Simple Snake Game
+        function initSnakeGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 400;
+            canvas.height = 400;
+
+            let snake = [{x: 200, y: 200}];
+            let food = {x: 100, y: 100};
+            let dx = 20, dy = 0;
+            let score = 0;
+
+            function gameLoop() {
+                // Clear canvas
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Move snake
+                const head = {x: snake[0].x + dx, y: snake[0].y + dy};
+                
+                // Check walls
+                if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
+                    alert(`Game Over! Score: ${score}`);
+                    showMainMenu();
+                    return;
+                }
+
+                snake.unshift(head);
+
+                // Check food
+                if (head.x === food.x && head.y === food.y) {
+                    score++;
+                    food = {
+                        x: Math.floor(Math.random() * 20) * 20,
+                        y: Math.floor(Math.random() * 20) * 20
+                    };
+                } else {
+                    snake.pop();
+                }
+
+                // Draw snake
+                ctx.fillStyle = 'lime';
+                snake.forEach(segment => {
+                    ctx.fillRect(segment.x, segment.y, 18, 18);
+                });
+
+                // Draw food
+                ctx.fillStyle = 'red';
+                ctx.fillRect(food.x, food.y, 18, 18);
+
+                setTimeout(gameLoop, 150);
+            }
+
+            // Controls
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp' && dy === 0) { dx = 0; dy = -20; }
+                if (e.key === 'ArrowDown' && dy === 0) { dx = 0; dy = 20; }
+                if (e.key === 'ArrowLeft' && dx === 0) { dx = -20; dy = 0; }
+                if (e.key === 'ArrowRight' && dx === 0) { dx = 20; dy = 0; }
+            });
+
+            gameLoop();
+        }
+
+        // Simple Pong Game
+        function initPongGame() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 600;
+            canvas.height = 400;
+
+            let paddle1Y = 150, paddle2Y = 150;
+            let ballX = 300, ballY = 200;
+            let ballDX = 5, ballDY = 3;
+            let score1 = 0, score2 = 0;
+
+            function gameLoop() {
+                // Clear canvas
+                ctx.fillStyle = 'black';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Move ball
+                ballX += ballDX;
+                ballY += ballDY;
+
+                // Ball collision with top/bottom
+                if (ballY <= 0 || ballY >= canvas.height - 20) {
+                    ballDY = -ballDY;
+                }
+
+                // Ball collision with paddles
+                if (ballX <= 30 && ballY >= paddle1Y && ballY <= paddle1Y + 100) {
+                    ballDX = -ballDX;
+                }
+                if (ballX >= canvas.width - 50 && ballY >= paddle2Y && ballY <= paddle2Y + 100) {
+                    ballDX = -ballDX;
+                }
+
+                // Score
+                if (ballX < 0) {
+                    score2++;
+                    ballX = 300; ballY = 200; ballDX = 5;
+                }
+                if (ballX > canvas.width) {
+                    score1++;
+                    ballX = 300; ballY = 200; ballDX = -5;
+                }
+
+                // AI paddle
+                if (paddle2Y + 50 < ballY) paddle2Y += 3;
+                if (paddle2Y + 50 > ballY) paddle2Y -= 3;
+
+                // Draw paddles
+                ctx.fillStyle = 'white';
+                ctx.fillRect(10, paddle1Y, 20, 100);
+                ctx.fillRect(canvas.width - 30, paddle2Y, 20, 100);
+
+                // Draw ball
+                ctx.fillRect(ballX, ballY, 20, 20);
+
+                // Draw score
+                ctx.font = '30px Arial';
+                ctx.fillText(score1, 100, 50);
+                ctx.fillText(score2, canvas.width - 130, 50);
+
+                requestAnimationFrame(gameLoop);
+            }
+
+            // Controls
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp' && paddle1Y > 0) paddle1Y -= 20;
+                if (e.key === 'ArrowDown' && paddle1Y < canvas.height - 100) paddle1Y += 20;
+            });
+
+            gameLoop();
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'96c9c817e0149985',t:'MTc1NDc2OTAxNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
